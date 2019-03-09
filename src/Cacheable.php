@@ -63,14 +63,22 @@ trait Cacheable {
 
             Cache::tags($tagName)
                 ->remember($keyValue, $this->getCacheTTL(), function () {
-                    return $this->attributesToArray();
+                    $attributes = $this->attributesToArray();
+                    return isset($this->cached_columns) && !empty($this->cached_columns) ? array_intersect_key(
+                        $attributes, 
+                        array_flip($this->cached_columns)
+                    ) : $attributes;
                 });
 
         } else {
 
             Cache::tags($tagName)
                 ->rememberForever($keyValue, function () {
-                    return $this->attributesToArray();
+                    $attributes = $this->attributesToArray();
+                    return isset($this->cached_columns) && !empty($this->cached_columns) ? array_intersect_key(
+                        $attributes, 
+                        array_flip($this->cached_columns)
+                    ) : $attributes;
                 });
         }
 
